@@ -3,7 +3,6 @@ import "@/index.css";
 import { Button } from "@alpic-ai/ui/components/button";
 import { ChevronLeft, Maximize2, Minimize2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { flushSync } from "react-dom";
 import { useDisplayMode, useLayout, useViewState } from "skybridge/web";
 import { useCallTool, useToolInfo } from "@/helpers.js";
 import type {
@@ -15,29 +14,15 @@ import DecisionCard from "@/views/components/decision-card.js";
 import DecisionEmpty from "@/views/components/decision-empty.js";
 import DecisionSkeleton from "@/views/components/decision-skeleton.js";
 import SourceViewer from "@/views/components/sources/source-viewer.js";
+import { withViewTransition } from "@/views/lib/view-transition.js";
 
 type SourceDetailMap = Record<string, SourceDetail>;
 type NavState = { decision: DecisionCardType; sourceDetails?: SourceDetailMap };
 
 const FADE = "36px";
 
-/** Crossfade a state change with the View Transitions API, honoring reduced motion. */
-function withViewTransition(update: () => void) {
-  const start = (
-    document as Document & {
-      startViewTransition?: (cb: () => void) => unknown;
-    }
-  ).startViewTransition?.bind(document);
-  const reduce =
-    typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-
-  if (!start || reduce) {
-    update();
-    return;
-  }
-  start(() => flushSync(update));
-}
+/** Extra breathing room below the host's fullscreen header bar. */
+const FULLSCREEN_TOP_INSET = 32;
 
 export default function FindDecision() {
   const toolInfo = useToolInfo<"find-decision">();
@@ -179,11 +164,13 @@ export default function FindDecision() {
   const bottomMask = fade.bottom ? FADE : "0px";
   const mask = `linear-gradient(to bottom, transparent, #000 ${topMask}, #000 calc(100% - ${bottomMask}), transparent)`;
 
+  const topInset = isFullscreen ? FULLSCREEN_TOP_INSET : 0;
+
   return (
     <div
       className={`${theme === "dark" ? "dark" : ""} text-foreground`}
       style={{
-        paddingTop: top,
+        paddingTop: top + topInset,
         paddingRight: right,
         paddingBottom: bottom,
         paddingLeft: left,
@@ -209,7 +196,7 @@ export default function FindDecision() {
           onScroll={recomputeFade}
           className="overflow-y-auto px-1 pt-1"
           style={{
-            maxHeight: maxHeight ? maxHeight : undefined,
+            maxHeight: maxHeight ? maxHeight - topInset : undefined,
             WebkitMaskImage: mask,
             maskImage: mask,
           }}

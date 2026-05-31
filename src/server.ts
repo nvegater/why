@@ -1,5 +1,6 @@
 import { McpServer } from "skybridge/server";
 import { z } from "zod";
+import { CONNECTORS } from "@/data/connectors.js";
 import { collectSourceDetails, getStore, toCard } from "@/data/store.js";
 
 const MIN_SIGNAL_TERMS = 2;
@@ -198,6 +199,53 @@ const server = new McpServer(
               events.length === 0
                 ? `No later events were found for "${decision.title}". Tell the user the decision still stands in this corpus.`
                 : `Later events for "${decision.title}" are below. Render them as a chronological prose timeline, oldest first, and include each source as a markdown link when a URL is present.\n${eventLines.join("\n")}`,
+          },
+        ],
+        isError: false,
+      };
+    },
+  )
+  .registerTool(
+    {
+      name: "connect-sources",
+      description:
+        "Open the source-setup screen so the user can pick which data sources (Slack, Gmail, Notion, GitHub) Y should read, then authorize them one by one. Use on first run before answering decision questions, or whenever the user wants to connect or manage their sources.",
+      inputSchema: {},
+      annotations: {
+        readOnlyHint: true,
+        openWorldHint: false,
+        destructiveHint: false,
+      },
+      view: {
+        component: "connect-sources",
+        description: "Connect sources",
+        csp: {
+          redirectDomains: [
+            "https://slack.com",
+            "https://accounts.google.com",
+            "https://www.notion.so",
+            "https://github.com",
+          ],
+        },
+      },
+    },
+    async () => {
+      const connectors = CONNECTORS.map(({ id, name, blurb }) => ({
+        id,
+        name,
+        blurb,
+      }));
+
+      return {
+        structuredContent: { connectors },
+        content: [
+          {
+            type: "text",
+            text: `Opened the connector setup screen. Available sources: ${connectors
+              .map((c) => c.name)
+              .join(
+                ", ",
+              )}. The user picks sources in a grid, then authorizes each one (the provider's sign-in tab opens and the connection is confirmed in-app). Let the user drive the selection and authorization; do not assume a source is connected until they complete it. Once setup is done, answer decision questions against the connected sources.`,
           },
         ],
         isError: false,

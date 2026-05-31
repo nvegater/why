@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useOpenExternal } from "skybridge/web";
 import type { Source, SourceDetail, SourceKind } from "@/data/types.js";
+import { SOURCE_BRAND } from "@/views/components/brand-marks.js";
 import CommitCard from "@/views/components/sources/commit-card.js";
 import DocumentExcerpt from "@/views/components/sources/document-excerpt.js";
 import EmailMessage from "@/views/components/sources/email-message.js";
@@ -78,6 +79,7 @@ export default function SourceViewer({
 }) {
   const openExternal = useOpenExternal();
   const Icon = SOURCE_ICONS[source.kind];
+  const { Logo } = SOURCE_BRAND[source.kind];
 
   return (
     <section
@@ -109,7 +111,7 @@ export default function SourceViewer({
           <Separator />
           <Button
             variant="secondary"
-            icon={<Icon className="size-3.5" aria-hidden />}
+            icon={<Logo className="size-3.5" />}
             iconTrailing={<ExternalLink className="size-3" aria-hidden />}
             onClick={() => source.url && openExternal(source.url)}
             aria-label={`Open ${source.label} in ${providerName(source.url)}`}
