@@ -2,6 +2,8 @@ import type { Decision } from "@/data/types.js";
 import type { DecisionMatch, DecisionStore } from "@/data/store.js";
 import { DECISIONS } from "@/data/mock/corpus.js";
 
+const DEFAULT_SEARCH_LATENCY_MS = 650;
+
 const STOP_WORDS = new Set([
   "about",
   "after",
@@ -73,8 +75,18 @@ function scoreDecision(decision: Decision, query: string, terms: string[]): numb
   return score;
 }
 
+async function wait(ms: number): Promise<void> {
+  await new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 export class MockDecisionStore implements DecisionStore {
+  constructor(private readonly searchLatencyMs = DEFAULT_SEARCH_LATENCY_MS) {}
+
   async search(query: string): Promise<DecisionMatch[]> {
+    await wait(this.searchLatencyMs);
+
     const terms = tokenize(query);
 
     return DECISIONS.map((decision) => ({

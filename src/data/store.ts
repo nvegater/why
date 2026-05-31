@@ -12,11 +12,12 @@ export interface DecisionStore {
 }
 
 export function toCard(decision: Decision): DecisionCard {
-  const { keywords, timeline, ...rest } = decision;
+  const { gaps = [], keywords, timeline, ...rest } = decision;
   void keywords;
 
   return {
     ...rest,
+    gaps,
     laterEventCount: timeline.length,
   };
 }

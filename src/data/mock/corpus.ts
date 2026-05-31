@@ -396,4 +396,164 @@ export const DECISIONS: Decision[] = [
       "people",
     ],
   },
+  {
+    id: "dec-webhook-outbox",
+    title: "Move webhook ingestion to an outbox-backed queue",
+    date: "2025-06-11",
+    owner: "Tomas Rivera (SRE Lead)",
+    reviewers: ["Priya Nadkarni", "Dana Okafor", "Mina Chen (Support Ops)"],
+    audience: "technical",
+    sourceSystem: "github",
+    alternatives: [
+      "Keep synchronous webhook handling",
+      "Send directly to Kafka",
+      "Batch webhooks hourly",
+    ],
+    arguments: [
+      {
+        claim:
+          "The outbox makes partner callbacks retryable without holding customer-facing writes open.",
+        sources: [
+          {
+            kind: "adr",
+            label: "ADR-0024",
+            url: "https://github.com/northwind-logistics/platform/blob/main/docs/adr/0024-webhook-outbox.md",
+            excerpt:
+              "The ADR chooses the outbox because it keeps writes short while preserving durable callback attempts.",
+          },
+          {
+            kind: "pr",
+            label: "PR #688",
+            url: "https://github.com/northwind-logistics/platform/pull/688",
+            excerpt:
+              "This PR writes webhook jobs inside the shipment transaction and lets workers drain them after commit.",
+          },
+        ],
+      },
+      {
+        claim:
+          "Idempotency keys are stored with each queued event, so duplicate partner retries collapse to one delivery.",
+        sources: [
+          {
+            kind: "commit",
+            label: "7c42b91",
+            url: "https://github.com/northwind-logistics/platform/commit/7c42b91c1440",
+            excerpt:
+              "The commit adds an idempotency key unique index on outbound webhook deliveries.",
+          },
+        ],
+      },
+      {
+        claim:
+          "Support can inspect stuck deliveries in one table instead of correlating app logs and partner tickets.",
+        sources: [
+          {
+            kind: "slack",
+            label: "#support-ops",
+            url: "https://northwind-eng.slack.com/archives/C08SUPPORT/p1749562200000000",
+            excerpt:
+              "Support asked for a single searchable delivery record because partner tickets rarely included request ids.",
+          },
+        ],
+      },
+    ],
+    related: [
+      {
+        id: "dec-pg-primary",
+        title: "Adopt PostgreSQL as the primary datastore",
+      },
+      {
+        id: "dec-search-rollback",
+        title: "Roll back the Elasticsearch search service to Postgres FTS",
+      },
+    ],
+    timeline: [
+      {
+        date: "2025-08-19",
+        title: "Dead-letter review added",
+        summary:
+          "SRE added a weekly review for webhooks that exceeded the retry budget after two partners changed auth headers without notice.",
+        kind: "revisit",
+        source: {
+          kind: "pr",
+          label: "PR #731",
+          url: "https://github.com/northwind-logistics/platform/pull/731",
+          excerpt:
+            "The job exports dead-lettered webhook deliveries to the support queue every Monday.",
+        },
+      },
+    ],
+    keywords: [
+      "webhook",
+      "webhooks",
+      "outbox",
+      "queue",
+      "retry",
+      "idempotency",
+      "partners",
+      "callbacks",
+      "dead letter",
+    ],
+  },
+  {
+    id: "dec-refund-manual-review",
+    title: "Keep automatic refund approvals off for EU disputes",
+    date: "2025-10-02",
+    owner: "Owner not recorded",
+    reviewers: [],
+    audience: "non-technical",
+    sourceSystem: "workspace",
+    alternatives: [],
+    arguments: [
+      {
+        claim:
+          "The team paused auto-approval after support saw duplicate refunds in two EU pilot accounts.",
+        sources: [],
+      },
+      {
+        claim:
+          "Manual review stays in place until billing can reconcile dispute webhooks within one business day.",
+        sources: [
+          {
+            kind: "email",
+            label:
+              'From Mina Chen - "EU refund pilot follow-up" - 2025-10-02',
+            excerpt:
+              "Mina noted that support would keep EU disputes in manual review until webhook reconciliation stopped creating duplicates.",
+          },
+        ],
+      },
+    ],
+    related: [],
+    timeline: [],
+    gaps: [
+      {
+        label: "Owner",
+        detail:
+          "The corpus has the support follow-up, but not the approving owner or meeting notes.",
+      },
+      {
+        label: "Alternatives",
+        detail:
+          "No rejected options were captured with the email thread, so the card cannot say what else was considered.",
+      },
+      {
+        label: "Primary source",
+        detail:
+          "The final approval appears to have happened in a private billing channel that is not in the mock corpus.",
+      },
+    ],
+    keywords: [
+      "refund",
+      "refunds",
+      "dispute",
+      "disputes",
+      "eu",
+      "billing",
+      "manual review",
+      "automatic approval",
+      "missing source",
+      "sparse record",
+    ],
+  },
 ];

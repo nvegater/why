@@ -110,3 +110,14 @@ Tailwind v4 via `@tailwindcss/vite`. Global styles in `src/index.css`. Component
 ### Repo state
 
 This directory is **not a git repository** — `git init` first if you need version control. `.gitignore` is already set up (excludes `node_modules`, `dist`, `.env*`, `.DS_Store`, `*.tsbuildinfo`, `.skybridge/`).
+
+## Design Context
+
+`PRODUCT.md` (project root) is the strategic design brief for any UI work — register, target users, brand personality, anti-references, and the design principles that guide the Decision Card surface. Read it before designing, redesigning, or critiquing views.
+
+- **Register**: `product` — design serves the decision-lookup task; Y is a guest inside ChatGPT and Claude, not a brand surface.
+- **Principles**: evidence over assertion · one settled answer, not a results page · guest in someone else's house · prose carries the framing (widgets stay thin) · read like a brief · one question, at most one follow-up.
+- **Minimal card**: the Decision Card holds only title, date, owner, alternatives, 2-3 winning arguments with source links, and related chips — no source-system tag, decision-id pill, reviewer list, or status chrome.
+- **Visual system**: inherited from `@alpic-ai/ui/theme` (see `src/index.css`); do not seed a new palette. `DESIGN.md`, when present, captures the concrete tokens.
+
+The `/impeccable` skill reads `PRODUCT.md` (and `DESIGN.md`) automatically before design tasks.

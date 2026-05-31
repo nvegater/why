@@ -2,6 +2,44 @@ import { McpServer } from "skybridge/server";
 import { z } from "zod";
 import { getStore, toCard } from "@/data/store.js";
 
+const MIN_SIGNAL_TERMS = 2;
+const STOP_WORDS = new Set([
+  "about",
+  "after",
+  "since",
+  "that",
+  "this",
+  "what",
+  "when",
+  "where",
+  "which",
+  "while",
+  "why",
+  "with",
+  "decide",
+  "decided",
+  "decision",
+  "choose",
+  "chose",
+  "pick",
+  "picked",
+  "because",
+  "our",
+  "the",
+  "and",
+  "for",
+  "did",
+]);
+
+function signalTerms(query: string): string[] {
+  return query
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter((term) => term.length > 2 && !STOP_WORDS.has(term));
+}
+
 const server = new McpServer(
   {
     name: "why",
@@ -45,12 +83,16 @@ const server = new McpServer(
       const top = matches[0]?.decision ?? null;
 
       if (!top) {
+        const isTooBroad = signalTerms(query).length < MIN_SIGNAL_TERMS;
+
         return {
           structuredContent: { decision: null, query },
           content: [
             {
               type: "text",
-              text: `No matching decision was found for "${query}". Ask a clarifying question before trying again.`,
+              text: isTooBroad
+                ? `The query "${query}" is too broad for the mock corpus. Ask for a more specific product area, system, policy, owner, or source term before trying again.`
+                : `No matching decision was found for "${query}". Ask a clarifying question before trying again.`,
             },
           ],
           isError: false,
@@ -66,13 +108,17 @@ const server = new McpServer(
         decision.laterEventCount > 0
           ? ` Offer to answer "What changed since?" and, if the user asks, call get-decision-changes with decisionId ${decision.id}.`
           : ` This decision has no later events in the corpus; if the user asks what changed since, call get-decision-changes with decisionId ${decision.id} and say it still stands.`;
+      const gapGuidance =
+        decision.gaps.length > 0
+          ? ` This card has known information gaps: ${decision.gaps.map((gap) => `${gap.label}: ${gap.detail}`).join(" ")} Do not infer missing details.`
+          : "";
 
       return {
         structuredContent: { decision, query },
         content: [
           {
             type: "text",
-            text: `Found decision "${decision.title}" from ${decision.date}, owned by ${decision.owner}. Explain the decision in prose around the card, citing the winning arguments and source links shown in the card.${timelineGuidance}${maybeAlsoMatched}`,
+            text: `Found decision "${decision.title}" from ${decision.date}, owned by ${decision.owner}. Explain the decision in prose around the card, citing the winning arguments and source links shown in the card.${timelineGuidance}${gapGuidance}${maybeAlsoMatched}`,
           },
         ],
         isError: false,

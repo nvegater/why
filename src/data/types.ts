@@ -19,6 +19,11 @@ export interface Argument {
   sources: Source[];
 }
 
+export interface InformationGap {
+  label: string;
+  detail: string;
+}
+
 export type TimelineEventKind =
   | "context"
   | "revisit"
@@ -50,9 +55,11 @@ export interface Decision {
   arguments: Argument[];
   related: RelatedRef[];
   timeline: TimelineEvent[];
+  gaps?: InformationGap[];
   keywords: string[];
 }
 
 export type DecisionCard = Omit<Decision, "keywords" | "timeline"> & {
   laterEventCount: number;
+  gaps: InformationGap[];
 };

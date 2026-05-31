@@ -1,0 +1,207 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-31T00:00:00Z",
+  "title": "Design System: Y",
+  "extensions": {
+    "colorMeta": {
+      "signal-magenta": {
+        "role": "primary",
+        "displayName": "Signal Magenta",
+        "canonical": "#e90060",
+        "tonalRamp": [
+          "oklch(0.18 0.10 358)",
+          "oklch(0.28 0.16 358)",
+          "oklch(0.38 0.21 358)",
+          "oklch(0.48 0.25 358)",
+          "oklch(0.56 0.26 358)",
+          "oklch(0.62 0.26 358)",
+          "oklch(0.78 0.16 358)",
+          "oklch(0.93 0.05 358)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#121e1e",
+        "tonalRamp": [
+          "oklch(0.16 0.012 196)",
+          "oklch(0.22 0.012 196)",
+          "oklch(0.32 0.012 196)",
+          "oklch(0.44 0.012 196)",
+          "oklch(0.57 0.012 196)",
+          "oklch(0.70 0.010 196)",
+          "oklch(0.85 0.008 196)",
+          "oklch(0.97 0.004 196)"
+        ]
+      },
+      "secondary-ink": {
+        "role": "neutral",
+        "displayName": "Secondary Ink",
+        "canonical": "#3a4848",
+        "tonalRamp": [
+          "oklch(0.18 0.012 196)",
+          "oklch(0.27 0.012 196)",
+          "oklch(0.38 0.012 196)",
+          "oklch(0.49 0.012 196)",
+          "oklch(0.61 0.010 196)",
+          "oklch(0.73 0.010 196)",
+          "oklch(0.86 0.008 196)",
+          "oklch(0.97 0.004 196)"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Border",
+        "canonical": "#acb8b8",
+        "tonalRamp": [
+          "oklch(0.20 0.010 196)",
+          "oklch(0.30 0.010 196)",
+          "oklch(0.42 0.010 196)",
+          "oklch(0.54 0.010 196)",
+          "oklch(0.66 0.010 196)",
+          "oklch(0.77 0.010 196)",
+          "oklch(0.88 0.008 196)",
+          "oklch(0.97 0.004 196)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(0.18 0.014 196)",
+          "oklch(0.28 0.012 196)",
+          "oklch(0.40 0.010 196)",
+          "oklch(0.55 0.008 196)",
+          "oklch(0.70 0.006 196)",
+          "oklch(0.85 0.004 196)",
+          "oklch(0.95 0.002 196)",
+          "oklch(1.00 0.000 196)"
+        ]
+      },
+      "dark-paper": {
+        "role": "neutral",
+        "displayName": "Dark Paper",
+        "canonical": "#071718",
+        "tonalRamp": [
+          "oklch(0.14 0.014 196)",
+          "oklch(0.18 0.014 196)",
+          "oklch(0.24 0.014 196)",
+          "oklch(0.32 0.012 196)",
+          "oklch(0.45 0.012 196)",
+          "oklch(0.60 0.010 196)",
+          "oklch(0.78 0.008 196)",
+          "oklch(0.95 0.004 196)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The decision title — the largest type and single focal point of the card (24px)." },
+      "title": { "displayName": "Title", "purpose": "Section labels: Considered, Why this won, Related. Bold but small (14px/600)." },
+      "body": { "displayName": "Body", "purpose": "Argument claims — the sentences that get read. Comfortable leading (14px)." },
+      "label": { "displayName": "Label", "purpose": "Metadata — the date and owner line, the quietest tier (12px)." }
+    },
+    "shadows": [
+      { "name": "ambient-hairline", "value": "0 1px 2px 0 rgba(0,0,0,0.10)", "purpose": "The card's only resting shadow. Barely perceptible; grounds the surface without lifting it." },
+      { "name": "tooltip-lift", "value": "0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)", "purpose": "Reserved exclusively for the source-excerpt tooltip floating above the card." }
+    ],
+    "motion": [
+      { "name": "tooltip-enter", "value": "fade-in + zoom-in 95%→100%, ~150ms ease-out", "purpose": "Source-excerpt tooltip entrance." },
+      { "name": "skeleton-pulse", "value": "opacity pulse, motion-safe only", "purpose": "Loading skeleton; suppressed under prefers-reduced-motion." },
+      { "name": "state-transition", "value": "transition-colors ~150ms", "purpose": "Hover/focus color shifts on interactive pills." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Decision Card Surface",
+      "kind": "card",
+      "refersTo": "surface",
+      "description": "The flat, square-cornered frame that holds the whole record.",
+      "html": "<div class=\"ds-surface\"><div class=\"ds-surface-title\">Adopt PostgreSQL as the primary datastore</div><div class=\"ds-surface-meta\">2024-03-12 · A. Rivera</div></div>",
+      "css": ".ds-surface { background: #ffffff; color: #121e1e; border: 1px solid #acb8b8; border-radius: 0; padding: 16px; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.10); max-width: 42rem; font-family: Inter, system-ui, sans-serif; } .ds-surface-title { font-size: 24px; line-height: 32px; font-weight: 600; } .ds-surface-meta { margin-top: 4px; font-size: 12px; line-height: 18px; color: #536262; }"
+    },
+    {
+      "name": "Tag",
+      "kind": "chip",
+      "refersTo": "tag",
+      "description": "Static label for a losing alternative under 'Considered.' Non-interactive; not used for filing metadata (no source-system or decision-id tags on the card).",
+      "html": "<span class=\"ds-tag\">PostgreSQL</span>",
+      "css": ".ds-tag { display: inline-flex; align-items: center; justify-content: center; border: 1px solid #acb8b8; background: #ffffff; color: #3a4848; border-radius: 6px; padding: 2px 9px; font-family: Inter, system-ui, sans-serif; font-size: 14px; line-height: 20px; font-weight: 500; }"
+    },
+    {
+      "name": "Source Pill",
+      "kind": "button",
+      "refersTo": "source-pill",
+      "description": "Interactive citation. Fully rounded to read as clickable, distinct from square tags. Opens the original source.",
+      "html": "<button class=\"ds-source-pill\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/></svg><span>ADR-0007</span><svg class=\"ds-trailing\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M15 3h6v6\"/><path d=\"M10 14 21 3\"/><path d=\"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6\"/></svg></button>",
+      "css": ".ds-source-pill { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 12px; border: 1px solid #acb8b8; background: #ffffff; color: #3a4848; border-radius: 9999px; font-family: Inter, system-ui, sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; } .ds-source-pill svg { width: 14px; height: 14px; } .ds-source-pill .ds-trailing { width: 12px; height: 12px; } .ds-source-pill:hover { background: #f1f5f5; color: #232e2e; } .ds-source-pill:focus-visible { outline: none; box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #f22b79; }"
+    },
+    {
+      "name": "Related Chip",
+      "kind": "button",
+      "refersTo": "source-pill",
+      "description": "Same secondary pill as a source link, with a question icon — clicking asks the model about the related decision next.",
+      "html": "<button class=\"ds-related-chip\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7.9 20A9 9 0 1 0 4 16.1L2 22Z\"/><path d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\"/><path d=\"M12 17h.01\"/></svg><span>Roll back Elasticsearch search to Postgres FTS</span></button>",
+      "css": ".ds-related-chip { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; height: 28px; padding: 0 12px; border: 1px solid #acb8b8; background: #ffffff; color: #3a4848; border-radius: 9999px; font-family: Inter, system-ui, sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; } .ds-related-chip svg { width: 14px; height: 14px; flex-shrink: 0; } .ds-related-chip span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ds-related-chip:hover { background: #f1f5f5; color: #232e2e; } .ds-related-chip:focus-visible { outline: none; box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #f22b79; }"
+    },
+    {
+      "name": "Winning Argument",
+      "kind": "custom",
+      "refersTo": "accent-dot",
+      "description": "A single claim led by the Signal Magenta dot — the card's entire use of brand color — with its sources cited beneath.",
+      "html": "<div class=\"ds-argument\"><span class=\"ds-argument-dot\" aria-hidden=\"true\"></span><div class=\"ds-argument-body\"><p class=\"ds-argument-claim\">Relational integrity and mature tooling outweighed the document-store flexibility for our access patterns.</p><button class=\"ds-source-pill\"><span>PR #482</span></button></div></div>",
+      "css": ".ds-argument { display: grid; grid-template-columns: 0.75rem 1fr; gap: 8px; font-family: Inter, system-ui, sans-serif; } .ds-argument-dot { width: 6px; height: 6px; margin-top: 8px; border-radius: 9999px; background: #e90060; } .ds-argument-body { min-width: 0; display: flex; flex-direction: column; gap: 8px; } .ds-argument-claim { margin: 0; font-size: 14px; line-height: 24px; color: #121e1e; } .ds-source-pill { display: inline-flex; align-items: center; height: 28px; padding: 0 12px; border: 1px solid #acb8b8; background: #ffffff; color: #3a4848; border-radius: 9999px; font-size: 12px; font-weight: 500; cursor: pointer; }"
+    },
+    {
+      "name": "Source Tooltip",
+      "kind": "custom",
+      "refersTo": "tooltip",
+      "description": "A dark inverted pill floating above the card to reveal a source excerpt on hover. The only element granted a real shadow.",
+      "html": "<div class=\"ds-tooltip\">“…we measured a 40% p99 latency drop after moving search back to Postgres FTS.”</div>",
+      "css": ".ds-tooltip { display: inline-block; max-width: 18rem; background: #071718; color: #ffffff; border-radius: 8px; padding: 8px 12px; font-family: Inter, system-ui, sans-serif; font-size: 12px; line-height: 18px; font-weight: 600; text-align: center; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Citation",
+    "overview": "Y is a decision-history card that reads like a sourced brief. Every claim it makes is footnoted; the design's whole job is to make the evidence legible and then get out of the way. The card narrates a settled 'why' — what was considered, why one option won, what it relates to — and hangs a source link under each claim the way a paper hangs a citation under a sentence. The aesthetic is the evidence itself: crisp type, a hairline border, generous whitespace between sourced statements. Y does not own its canvas; it renders inside ChatGPT and Claude, inherits each host's theme and density, and never competes with the surrounding conversation. Its identity is a balanced signature: one accent color on exactly one element, a fixed reading rhythm, and a consistent citation pattern. The signature lives in structure, not decoration.",
+    "keyCharacteristics": [
+      "One focused card, never a panel grid.",
+      "One accent (Signal Magenta) on one element; everything else is teal-tinted neutral.",
+      "A single typeface (Inter) doing all the work through weight and scale.",
+      "Flat by default: a hairline border and crisp corners carry the surface, not shadow.",
+      "Theme-adaptive: legible and on-rhythm in both the host's light and dark modes."
+    ],
+    "rules": [
+      { "name": "The One Mark Rule", "body": "Signal Magenta appears on at most one element per card — the winning-argument bullet. It is never used for links, borders, backgrounds, section headings, or hover states. If a second magenta element appears, one of them is wrong.", "section": "colors" },
+      { "name": "The Teal-Neutral Rule", "body": "Neutrals carry a teal cast, never a warm one. Do not introduce warm grays, creams, or paper-beige tints; they read as a different product.", "section": "colors" },
+      { "name": "The Weight-Not-Family Rule", "body": "Hierarchy comes from weight and scale within Inter, never from a second typeface.", "section": "typography" },
+      { "name": "The No-Shout Rule", "body": "The card title tops out at 24px. Display sizes above that belong to host marketing surfaces, never to a Decision Card living inline in chat.", "section": "typography" },
+      { "name": "The Flat-Record Rule", "body": "Surfaces are flat at rest. The only element that lifts is the tooltip, and only because it is genuinely floating above the content.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep the card to its essential fields: title, date, owner, losing alternatives, 2-3 winning arguments with links, related chips. If plain text wouldn't meaningfully degrade a piece, it isn't a widget.",
+      "Do keep Signal Magenta on exactly one element per card (the winning-argument dot). Its rarity is the signal.",
+      "Do keep the surface flat with a 1px hairline border and square corners; let hierarchy and whitespace carry depth.",
+      "Do carry the full hierarchy with Inter weights and scale (400/500/600), not a second typeface.",
+      "Do keep neutrals teal-tinted; the 'gray' here is always a desaturated teal.",
+      "Do distinguish facts from actions by shape: square tags for provenance, fully-rounded pills for clickable citations.",
+      "Do adapt to the host's light and dark theme; verify text stays legible against both Paper values.",
+      "Do preview the result shape in the loading skeleton, never a bare spinner."
+    ],
+    "donts": [
+      "Don't add filing metadata to the card — source-system tags, decision-id pills, reviewer lists, status badges. The card carries the decision, not its provenance chrome.",
+      "Don't build a cluttered SaaS dashboard: no KPI tiles, no multi-panel admin chrome. One card.",
+      "Don't add heavy branded chrome: no logos, no gradients, no marketing flourish that fights the host.",
+      "Don't go playful or gamified: no mascots, badges, confetti, or emoji-driven tone.",
+      "Don't ship the generic AI-app card: no gradient-accent, glassy, or over-rounded 'template' look.",
+      "Don't use a border-left/border-right greater than 1px as a colored accent stripe on any card, section, or callout.",
+      "Don't use gradient text (background-clip: text over a gradient) anywhere; emphasis is weight or size, in one solid color.",
+      "Don't use glassmorphism (decorative blur/backdrop-filter) as a surface treatment.",
+      "Don't spread the magenta to links, headings, borders, or hover states. If you see two magenta things, one is a bug.",
+      "Don't exceed a 24px title; the card lives inline in chat, not on a landing page."
+    ]
+  }
+}

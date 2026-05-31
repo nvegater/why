@@ -26,6 +26,7 @@ export default function FindDecision() {
       className={`${theme === "dark" ? "dark" : ""} bg-background text-foreground`}
       style={{
         maxHeight,
+        overflowY: "auto",
         paddingTop: top,
         paddingRight: right,
         paddingBottom: bottom,
