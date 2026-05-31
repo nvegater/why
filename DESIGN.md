@@ -60,25 +60,30 @@ spacing:
   xl: "20px"
 components:
   surface:
-    backgroundColor: "{colors.paper}"
+    backgroundColor: "transparent"
     textColor: "{colors.ink}"
-    rounded: "0px"
-    padding: "16px"
+    border: "none"
+    edgeFade: "mask-image linear-gradient, ~36px at scrollable edges"
   tag:
     backgroundColor: "{colors.paper}"
     textColor: "{colors.secondary-ink}"
     rounded: "{rounded.sm}"
     padding: "2px 9px"
-  source-pill:
+  source-citation:
+    tileBackground: "color-mix(foreground 6%)"
+    tileSize: "32px"
+    tileRounded: "7px"
+    kindLabelColor: "{colors.secondary-ink}"
+    identifierColor: "{colors.ink}"
+  related-chip:
     backgroundColor: "{colors.paper}"
     textColor: "{colors.secondary-ink}"
     rounded: "{rounded.pill}"
-    height: "28px"
-    padding: "0 12px"
-  accent-dot:
-    backgroundColor: "{colors.signal-magenta}"
-    rounded: "{rounded.pill}"
-    size: "6px"
+  argument-thread:
+    nodeColor: "{colors.signal-magenta}"
+    nodeSize: "8px"
+    railColor: "color-mix(foreground 20%)"
+    railWidth: "1px"
   tooltip:
     backgroundColor: "{colors.inverted}"
     textColor: "{colors.inverted-ink}"
@@ -92,7 +97,7 @@ components:
 
 **Creative North Star: "The Citation"**
 
-Y is a decision-history card that reads like a sourced brief. Every claim it makes is footnoted; the design's whole job is to make the evidence legible and then get out of the way. The card narrates a settled "why" — what was considered, why one option won, what it relates to — and hangs a source link under each claim the way a paper hangs a citation under a sentence. The aesthetic is the evidence itself: crisp type, a hairline border, generous whitespace between sourced statements. When the design is working, you notice the argument and the sources, not the chrome.
+Y is a decision-history card that reads like a sourced brief. Every claim it makes is footnoted; the design's whole job is to make the evidence legible and then get out of the way. The card narrates a settled "why" — what was considered, why one option won, what it relates to — and hangs a typed citation under each claim the way a paper hangs a citation under a sentence. The aesthetic is the evidence itself: crisp type, generous whitespace between sourced statements, and no frame at all — the content sits directly on the host canvas. When the design is working, you notice the argument and the sources, not the chrome.
 
 Y does not own its canvas. It renders inside ChatGPT and Claude, so it inherits each host's theme, type rendering, and density, and it never competes with the surrounding conversation. Its identity is a *balanced signature*: one accent color used on exactly one element, a fixed reading rhythm (title → considered → why this won → related), and a consistent citation pattern. The signature lives in structure, not decoration.
 
@@ -104,7 +109,7 @@ This system explicitly rejects the cluttered SaaS dashboard (no KPI tiles, no mu
 - One focused card, never a panel grid.
 - One accent (Signal Magenta) on one element; everything else is teal-tinted neutral.
 - A single typeface (Inter) doing all the work through weight and scale.
-- Flat by default: a hairline border and crisp corners carry the surface, not shadow.
+- Frameless by default: no border, fill, or shadow; content floats on the host canvas and an edge fade carries the boundary.
 - Theme-adaptive: legible and on-rhythm in both the host's light and dark modes.
 
 ## 2. Colors
@@ -151,47 +156,67 @@ A teal-tinted neutral foundation with a single vivid magenta accent. The neutral
 
 ## 4. Elevation
 
-Flat by default. The card is defined by a single hairline border (`1px solid` Border) and crisp corners — not by a shadow. Depth in this system is communicated by hierarchy and whitespace, not by lifting surfaces. The ambient shadow token (`#0000001a` light, `#ffffff1a` dark) is whisper-quiet and applies at most a 1px `shadow-xs` to the outer card.
+No frame at all. The card has no border, no fill, and no shadow: its content sits directly on the host canvas (the iframe body is transparent), so the type, citations, and thread read as part of the conversation rather than as a transplanted, bordered box. The earlier bordered-card-with-shadow treatment double-framed the widget — a card inside a box inside the chat — which is exactly the "embedded legacy widget" look this retires. Depth comes from hierarchy, whitespace, and the edge fade, never from a stroke or a stacked surface.
 
-The one true elevation is the **tooltip**: a dark inverted pill that floats above the card to reveal a source excerpt on hover. It is the only element allowed a real shadow (`shadow-lg` in light mode; a hairline `drop-shadow` outline in dark, where a soft shadow would disappear).
+When the content is taller than the host's `maxHeight`, the scroll container fades at the live edges via a `mask-image` gradient: a bottom fade whenever there is more below, a top fade once scrolled. The fade signals "this is a viewport into more," not a sealed object slamming into a hard floor. When everything fits, both fades collapse to zero and nothing is masked.
 
-### Shadow Vocabulary
-- **Ambient hairline** (`box-shadow` driven by `--color-shadow`, ~`0 1px 2px`): The card's only resting shadow. Barely perceptible; it grounds the surface without lifting it.
-- **Tooltip lift** (`shadow-lg` light / `drop-shadow(0 0 0.5px border)` dark): Reserved exclusively for the source-excerpt tooltip.
+The inline card is a focused summary, not the whole app: a quiet expand control (top-right) requests `fullscreen` via `useDisplayMode()` for the reader who wants room, and requests `inline` to collapse back.
+
+Nothing lifts above the conversation. The source layer is rendered **in place** — it replaces the card's content within the same area (see Source Viewer), so there is no floating panel and no modal over the chat.
+
+### Surface Vocabulary
+- **Edge fade** (`mask-image` linear gradient, ~36px, applied only at a scrollable edge): the sole framing device. Replaces the old border + shadow.
+- **Recessed tints** (`bg-foreground/[0.06]` for citation stamp tiles; `bg-muted` inside the source layer): theme-adaptive recession to mark evidence and decisive blocks — recession, not elevation.
 
 ### Named Rules
-**The Flat-Record Rule.** Surfaces are flat at rest. The only element that lifts is the tooltip, and only because it is genuinely floating above the content. No drop shadows on cards, tags, pills, or sections.
+**The Dissolved-Frame Rule.** The card never draws its own border, fill, or shadow against the host. Separation is carried by hierarchy, whitespace, and the edge fade. If you reach for a 1px outer border or a card background to "contain" it, you are rebuilding the box this system removed.
 
 ## 5. Components
 
-### Surface (the Decision Card frame)
-- **Corner Style:** Square (`0px`) — crisp, document-like corners. This is a deliberate departure from the library's rounded-xl `Card`; the record reads as a page, not a chip.
-- **Background:** Paper (`#ffffff` / `#071718`).
-- **Border:** 1px solid Border.
-- **Shadow Strategy:** Ambient hairline only (see Elevation).
-- **Internal Padding:** 16px (20px at `sm` and up). Sections separated by 16px vertical rhythm; items within a section by 8px.
+### Surface (the dissolved frame)
+- **Background:** None. The iframe body is transparent (`html, body { background-color: transparent }`) so the host canvas shows through. No Paper fill, no card.
+- **Border / Shadow:** None. See **The Dissolved-Frame Rule** (Elevation).
+- **Edge fade:** A `mask-image` linear gradient on the scroll container, ~36px, applied at an edge only while it is scrollable (top once scrolled, bottom while more remains). This is the only framing device.
+- **Expand control:** A `tertiary` `icon` button, top-right, toggling `fullscreen` / `inline` via `useDisplayMode()`. The card header reserves right padding (`pr-9`) so a long title never runs under it.
 - **Width:** Capped at `max-w-2xl` and centered — narrow enough to keep claim lines in a readable measure.
+- **Vertical rhythm:** Sections separated by ~20px (`space-y-5`); items within a section by ~10px.
+- **Note:** this single area hosts every state — the card, the loading skeleton, the empty state, and the in-place source layer all render in it.
 
 ### Tags
 - **Style:** 1px Border, Paper background, Secondary Ink text, `6px` radius (`rounded-sm`), 12–14px type, medium weight. Square-ish, crisp.
 - **Use:** Each losing alternative under "Considered." Tags are *not* used for filing metadata — no source-system label, no decision-id pill on the card.
 - **State:** Static, non-interactive. Tags carry facts, not actions.
 
-### Source Pills (interactive citations)
-- **Shape:** Fully rounded (`pill`, `9999px`), 28px tall — visually distinct from the square tags so "this is clickable" reads instantly.
-- **Style:** Secondary button — Paper background, 1px Border, Secondary Ink text, a leading source-kind icon and a trailing external-link glyph.
-- **Hover / Focus:** Background shifts to Background-Hover, text to a darker ink; `2px` Focus Ring with a 2px offset on keyboard focus.
-- **No-URL variant:** Email and URL-less sources render as a non-interactive Tag instead of a pill — provenance without a false affordance.
+### Source Citations (typed evidence, the signature treatment)
+The card's citations are **not** pills. Each is a borderless, type-aware unit that reads like its own object yet shares one structure, so the family is coherent without the generic outlined-pill look (which made every chip on the card identical and "liney").
+- **Anatomy:** a filled "stamp" tile (`size-8`, `rounded-[7px]`, `bg-foreground/[0.06]` with a hairline inset ring) holding a kind-specific icon, then two stacked lines — a quiet **kind label** (`type-text-xs`, muted) over the **identifier** (`type-text-sm`, medium, ink). A trailing `ChevronRight` slides in on hover.
+- **Per-kind identity:** the icon + kind label + identifier together name the type at a glance — `ADR` (FileText), `Slack` (Hash), `Pull request` (GitPullRequest), `Commit` (GitCommitHorizontal, identifier in `tabular-nums`), `Email` (Mail), `Notion` / `Document` (NotebookPen / FileText). Coherence is the shared tile-and-two-line structure; distinction is the glyph and the content.
+- **Theme-adaptive tile:** the tile fill is an ink transparency (`bg-foreground/[0.06]`, hover `/10`), so the stamp stays visible on both the white and near-black host canvas — never a fixed `bg-muted` that vanishes in dark.
+- **Action:** clicking opens the in-place Source Viewer (it does **not** redirect out). The external link is demoted to the final action inside the layer. URL-less sources (email) behave identically; only the "Open in…" button inside the layer is conditional on a URL.
+- **Not a pill:** citations are square-tiled and borderless by design, which is what visually separates them from the two pill families below.
 
-### Related Chips
-- **Style:** Same secondary pill as Source Pills, with a question-mark icon, signaling "ask about this next." Clicking sends a follow-up turn to the model.
+### Pills — Tags (Considered) and Related Chips
+Pills are reserved for two roles, and only these two:
+- **Considered (Tags):** 1px Border, `rounded-sm`, Secondary Ink — one per losing alternative. Static, non-interactive; they carry facts, not actions.
+- **Related Chips:** secondary `pill` button with a question-mark icon. Clicking **opens the related decision in place** via a direct `useCallTool("find-decision")` call (no new model turn) and crossfades the card to it; a "Back" control returns to the first decision. The clicked chip carries its own loading spinner (`Button loading`) while the fetch is in flight, and siblings disable. (Supersedes the earlier behavior of sending a follow-up turn to the model.)
 
-### The Accent Dot (signature component)
-- A `6px` Signal Magenta dot leading each winning argument. This is the card's entire use of brand color and its single most recognizable mark. See **The One Mark Rule.**
+### The Winning-Argument Thread (signature component)
+- Each winning argument is led by a `size-2` Signal Magenta dot, and the dots are linked top-to-bottom by a quiet 1px rail (`bg-foreground/20`) — a literal thread of reasoning down the left of "Why this won." The magenta lives **only** on the dot nodes; the connecting rail is a neutral ink tint. This is the card's entire use of brand color and its single most recognizable mark. See **The One Mark Rule.**
+- The arguments enter with a `motion-safe` staggered fade + slide (80ms apart), so the thread assembles itself; under `prefers-reduced-motion` they are simply present.
 
-### Tooltip
-- **Style:** Inverted dark pill, `8px` radius, `8px 12px` padding, 12px semibold text, balanced/centered, with a rotated-square arrow. Fades and zooms in (95%→100%).
-- **Use:** Source excerpts, on hover, only where the device supports hover and an excerpt exists.
+### Source Viewer (in-place source layer)
+The depth layer behind each citation. Clicking a source citation replaces the card's content, within the same area, with a focused view of that one source. (This retires the old hover Tooltip, which only ever surfaced a one-line excerpt.)
+
+- **Shell:** a quiet "‹ Back to decision" control (tertiary button), the source's own header, the source-specific body, and — only when a URL exists — a secondary "Open in {GitHub|Slack|Notion|Google Docs}" button at the bottom.
+- **Entry motion:** `motion-safe` fade + 1px slide-up, ~200ms; nothing under `prefers-reduced-motion`.
+- **One Mark, in-layer:** Signal Magenta appears exactly once per layer — the single dot that marks the decisive message, quote, or "what settled it" line. Everything else is teal-neutral, and the highlighted evidence sits in a recessed `bg-muted` block, not a colored stripe.
+- **Source-specific renderers** (the value of the app — each source type shows the slice that drove the decision):
+  - **Slack** — channel header, then a participant dialogue (initials avatar + name + handle + time + message); the decisive message is recessed and dot-marked.
+  - **Email** — subject header, a From / To / Date description list, then quoted excerpts; the decisive quote is recessed and dot-marked.
+  - **GitHub PR** — PR header (icon, repo #number, state badge, title, author), summary, then a comment thread (avatar + handle + body); the decisive comment is recessed and dot-marked.
+  - **Commit** — short SHA (tabular, not a mono face) + repo, subject and body, author · date, and an optional files-changed list.
+  - **Document (ADR / Doc / Notion)** — title (+ optional status badge and section), the excerpt, and a "What settled it" recessed block carrying the one magenta dot.
+- **Data source:** rich source content is delivered to the view via the tool's `_meta` (as `responseMetadata`) and is **never** sent to the model, so prose can't restate it. The view joins it to the on-card source by `source.id`.
 
 ### Skeleton (loading)
 - Surface-Muted blocks with a `motion-safe` pulse, laid out to match the real card's rhythm (title, tag row, argument lines) so the load state previews the result instead of a generic spinner.
@@ -200,13 +225,13 @@ The one true elevation is the **tooltip**: a dark inverted pill that floats abov
 
 ### Do:
 - **Do** keep the card to its essential fields: title, date, owner, losing alternatives, 2–3 winning arguments with links, related chips. If plain text wouldn't meaningfully degrade a piece, it isn't a widget.
-- **Do** keep Signal Magenta on exactly one element per card (the winning-argument dot). Its rarity is the signal.
-- **Do** keep the surface flat with a 1px hairline border and square corners; let hierarchy and whitespace carry depth.
+- **Do** keep Signal Magenta on exactly one element per card (the winning-argument dot nodes). Its rarity is the signal; the connecting thread rail stays neutral.
+- **Do** keep the frame dissolved: no border, fill, or shadow on the card. Let hierarchy, whitespace, and the edge fade carry separation against the host.
 - **Do** carry the full hierarchy with Inter weights and scale (400/500/600), not a second typeface.
-- **Do** keep neutrals teal-tinted; the "gray" here is always a desaturated teal.
-- **Do** distinguish facts from actions by shape: square tags for provenance, fully-rounded pills for clickable citations.
-- **Do** adapt to the host's light and dark theme; verify text stays legible against both Paper values.
-- **Do** preview the result shape in the loading skeleton, never a bare spinner.
+- **Do** keep neutrals teal-tinted; the "gray" here is always a desaturated teal. Where a surface must read in both themes, use an ink transparency (`bg-foreground/N`), not a fixed neutral.
+- **Do** keep the three element families distinct: typed **citation tiles** for evidence (borderless, square stamp), **Tags** for considered alternatives (bordered, square), **pill** chips for related decisions (rounded). One role each.
+- **Do** adapt to the host's light and dark theme; verify text and tiles stay legible on both the white and near-black canvas.
+- **Do** preview the result shape in the loading skeleton for the initial search; for in-place related navigation, keep the loading feedback on the action (the chip's own spinner), not a spinner floating in content.
 
 ### Don't:
 - **Don't** add filing metadata to the card — source-system tags, decision-id pills, reviewer lists, status badges. The card carries the decision, not its provenance chrome.

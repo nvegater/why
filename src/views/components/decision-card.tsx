@@ -1,8 +1,7 @@
 import { Tag } from "@alpic-ai/ui/components/tag";
-import { TooltipProvider } from "@alpic-ai/ui/components/tooltip";
 import type { DecisionCard as DecisionCardPayload } from "@/data/types.js";
 import RelatedChips from "@/views/components/related-chips.js";
-import SourceLink from "@/views/components/source-link.js";
+import SourceCitation from "@/views/components/source-citation.js";
 
 function llmSummary(decision: DecisionCardPayload): string {
   const alternatives =
@@ -30,66 +29,80 @@ function llmSummary(decision: DecisionCardPayload): string {
 
 export default function DecisionCard({
   decision,
+  onOpenSource,
+  onOpenRelated,
+  pendingRelatedId,
 }: {
   decision: DecisionCardPayload;
+  onOpenSource: (id: string) => void;
+  onOpenRelated: (id: string) => void;
+  pendingRelatedId: string | null;
 }) {
   return (
-    <TooltipProvider>
-      <article className="space-y-4" data-llm={llmSummary(decision)}>
-        <header className="space-y-1">
-          <h2 className="type-display-xs font-semibold tracking-normal text-foreground">
-            {decision.title}
-          </h2>
-          <p className="type-text-xs text-muted-foreground">
-            {decision.date} - {decision.owner}
+    <article className="space-y-5" data-llm={llmSummary(decision)}>
+      <header className="space-y-1.5 pr-9">
+        <h2 className="type-display-xs font-semibold tracking-normal text-balance text-foreground">
+          {decision.title}
+        </h2>
+        <p className="type-text-xs text-muted-foreground">
+          {decision.date} &middot; {decision.owner}
+        </p>
+      </header>
+
+      <section className="space-y-2.5">
+        <h3 className="type-text-sm font-semibold text-foreground">Considered</h3>
+        {decision.alternatives.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {decision.alternatives.map((alternative) => (
+              <Tag key={alternative}>{alternative}</Tag>
+            ))}
+          </div>
+        ) : (
+          <p
+            className="type-text-sm leading-6 text-muted-foreground"
+            data-llm="No losing alternatives were recorded for this decision."
+          >
+            No alternatives recorded in this corpus.
           </p>
-        </header>
+        )}
+      </section>
 
-        <section className="space-y-2">
-          <h3 className="type-text-sm font-semibold text-foreground">
-            Considered
-          </h3>
-          {decision.alternatives.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {decision.alternatives.map((alternative) => (
-                <Tag key={alternative}>{alternative}</Tag>
-              ))}
-            </div>
-          ) : (
-            <p
-              className="type-text-sm leading-6 text-muted-foreground"
-              data-llm="No losing alternatives were recorded for this decision."
-            >
-              No alternatives recorded in this corpus.
-            </p>
-          )}
-        </section>
-
-        <section className="space-y-2">
-          <h3 className="type-text-sm font-semibold text-foreground">
-            Why this won
-          </h3>
-          {decision.arguments.length > 0 ? (
-            <ol className="space-y-3">
-              {decision.arguments.map((argument) => (
+      <section className="space-y-2.5">
+        <h3 className="type-text-sm font-semibold text-foreground">Why this won</h3>
+        {decision.arguments.length > 0 ? (
+          <ol>
+            {decision.arguments.map((argument, index) => {
+              const isLast = index === decision.arguments.length - 1;
+              return (
                 <li
                   key={argument.claim}
-                  className="grid grid-cols-[0.75rem_1fr] gap-2"
+                  className="flex gap-3 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-2 motion-safe:fill-mode-both motion-safe:duration-500 motion-safe:ease-out"
+                  style={{ animationDelay: `${index * 80}ms` }}
                 >
-                  <span
-                    className="mt-2 size-1.5 rounded-full bg-primary"
+                  {/* the winning-argument thread — magenta dot nodes on a quiet rail */}
+                  <div
+                    className="flex w-3.5 shrink-0 flex-col items-center"
                     aria-hidden
-                  />
-                  <div className="min-w-0 space-y-2">
+                  >
+                    <span className="mt-[7px] size-2 rounded-full bg-primary" />
+                    {!isLast ? (
+                      <span className="mt-1.5 w-px flex-1 bg-foreground/20" />
+                    ) : null}
+                  </div>
+
+                  <div
+                    className={`min-w-0 flex-1 space-y-2.5 ${isLast ? "pb-0" : "pb-5"}`}
+                  >
                     <p className="type-text-sm leading-6 text-foreground">
                       {argument.claim}
                     </p>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-col items-start gap-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-2">
                       {argument.sources.length > 0 ? (
                         argument.sources.map((source) => (
-                          <SourceLink
-                            key={`${source.kind}-${source.label}`}
+                          <SourceCitation
+                            key={source.id}
                             source={source}
+                            onOpenSource={onOpenSource}
                           />
                         ))
                       ) : (
@@ -100,75 +113,72 @@ export default function DecisionCard({
                     </div>
                   </div>
                 </li>
-              ))}
-            </ol>
-          ) : (
-            <p
-              className="type-text-sm leading-6 text-muted-foreground"
-              data-llm="No winning arguments were recorded for this decision."
-            >
-              No winning arguments recorded in this corpus.
-            </p>
-          )}
+              );
+            })}
+          </ol>
+        ) : (
+          <p
+            className="type-text-sm leading-6 text-muted-foreground"
+            data-llm="No winning arguments were recorded for this decision."
+          >
+            No winning arguments recorded in this corpus.
+          </p>
+        )}
+      </section>
+
+      {decision.gaps.length > 0 ? (
+        <section className="space-y-2.5 border-t border-subtle pt-4">
+          <h3 className="type-text-sm font-semibold text-foreground">
+            Information gaps
+          </h3>
+          <ul
+            className="space-y-2"
+            data-llm={`Known information gaps: ${decision.gaps
+              .map((gap) => `${gap.label}: ${gap.detail}`)
+              .join(" ")}`}
+          >
+            {decision.gaps.map((gap) => (
+              <li key={gap.label} className="flex gap-3">
+                <span
+                  className="mt-[9px] size-1 shrink-0 rounded-full bg-muted-foreground"
+                  aria-hidden
+                />
+                <div className="min-w-0">
+                  <p className="type-text-sm font-semibold text-foreground">
+                    {gap.label}
+                  </p>
+                  <p className="type-text-sm leading-6 text-muted-foreground">
+                    {gap.detail}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
         </section>
+      ) : null}
 
-        {decision.gaps.length > 0 ? (
-          <section className="space-y-2 border-t border-border pt-3">
-            <h3 className="type-text-sm font-semibold text-foreground">
-              Information gaps
-            </h3>
-            <ul
-              className="space-y-2"
-              data-llm={`Known information gaps: ${decision.gaps
-                .map((gap) => `${gap.label}: ${gap.detail}`)
-                .join(" ")}`}
-            >
-              {decision.gaps.map((gap) => (
-                <li
-                  key={gap.label}
-                  className="grid grid-cols-[0.75rem_1fr] gap-2"
-                >
-                  <span
-                    className="mt-2 size-1 rounded-full bg-muted-foreground"
-                    aria-hidden
-                  />
-                  <div className="min-w-0">
-                    <p className="type-text-sm font-semibold text-foreground">
-                      {gap.label}
-                    </p>
-                    <p className="type-text-sm leading-6 text-muted-foreground">
-                      {gap.detail}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
+      {decision.related.length === 0 && decision.gaps.length > 0 ? (
+        <section className="space-y-2.5 border-t border-subtle pt-4">
+          <h3 className="type-text-sm font-semibold text-foreground">Related</h3>
+          <p
+            className="type-text-sm leading-6 text-muted-foreground"
+            data-llm="No related decisions were recorded for this incomplete card."
+          >
+            No related decisions recorded.
+          </p>
+        </section>
+      ) : null}
 
-        {decision.related.length === 0 && decision.gaps.length > 0 ? (
-          <section className="space-y-2 border-t border-border pt-3">
-            <h3 className="type-text-sm font-semibold text-foreground">
-              Related
-            </h3>
-            <p
-              className="type-text-sm leading-6 text-muted-foreground"
-              data-llm="No related decisions were recorded for this incomplete card."
-            >
-              No related decisions recorded.
-            </p>
-          </section>
-        ) : null}
-
-        {decision.related.length > 0 ? (
-          <section className="space-y-2">
-            <h3 className="type-text-sm font-semibold text-foreground">
-              Related
-            </h3>
-            <RelatedChips related={decision.related} />
-          </section>
-        ) : null}
-      </article>
-    </TooltipProvider>
+      {decision.related.length > 0 ? (
+        <section className="space-y-2.5">
+          <h3 className="type-text-sm font-semibold text-foreground">Related</h3>
+          <RelatedChips
+            related={decision.related}
+            onOpen={onOpenRelated}
+            pendingId={pendingRelatedId}
+          />
+        </section>
+      ) : null}
+    </article>
   );
 }

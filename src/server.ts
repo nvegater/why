@@ -1,6 +1,6 @@
 import { McpServer } from "skybridge/server";
 import { z } from "zod";
-import { getStore, toCard } from "@/data/store.js";
+import { collectSourceDetails, getStore, toCard } from "@/data/store.js";
 
 const MIN_SIGNAL_TERMS = 2;
 const STOP_WORDS = new Set([
@@ -100,6 +100,7 @@ const server = new McpServer(
       }
 
       const decision = toCard(top);
+      const sourceDetails = collectSourceDetails(top);
       const maybeAlsoMatched =
         matches[1] && matches[1].score >= matches[0].score - 1
           ? ` Another decision also matched: ${matches[1].decision.title}. Ask a clarifying question if the user's intent is ambiguous.`
@@ -118,10 +119,11 @@ const server = new McpServer(
         content: [
           {
             type: "text",
-            text: `Found decision "${decision.title}" from ${decision.date}, owned by ${decision.owner}. Explain the decision in prose around the card, citing the winning arguments and source links shown in the card.${timelineGuidance}${gapGuidance}${maybeAlsoMatched}`,
+            text: `Found decision "${decision.title}" from ${decision.date}, owned by ${decision.owner}. Explain the decision in prose around the card, citing the winning arguments shown in the card. Each source on the card is an openable widget that holds the underlying Slack thread, email, or PR discussion; that evidence is not in your context, so do not invent or restate it — point the user to open a source to see it.${timelineGuidance}${gapGuidance}${maybeAlsoMatched}`,
           },
         ],
         isError: false,
+        _meta: { sourceDetails },
       };
     },
   )

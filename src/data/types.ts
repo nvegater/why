@@ -7,11 +7,84 @@ export type SourceKind =
   | "notion"
   | "doc";
 
+export interface SlackMessage {
+  author: string;
+  handle?: string;
+  time: string;
+  text: string;
+  decisive?: boolean;
+}
+
+export interface EmailQuote {
+  text: string;
+  decisive?: boolean;
+}
+
+export interface PullRequestComment {
+  author: string;
+  handle?: string;
+  body: string;
+  decisive?: boolean;
+}
+
+/**
+ * Source-specific rich content rendered inside the in-widget source layer.
+ * Discriminated on `type` (decoupled from SourceKind so adr/doc/notion can
+ * share the "document" shape; the source's `kind` still drives icon + label).
+ * Lives view-only: it is split into the tool's `_meta` and never reaches the
+ * model, so prose can't restate it. See store.ts:collectSourceDetails.
+ */
+export type SourceDetail =
+  | {
+      type: "slack";
+      channel: string;
+      messages: SlackMessage[];
+    }
+  | {
+      type: "email";
+      from: string;
+      to: string[];
+      date: string;
+      subject: string;
+      quotes: EmailQuote[];
+    }
+  | {
+      type: "pr";
+      repo: string;
+      number: number;
+      state: "merged" | "open" | "closed";
+      title: string;
+      author: string;
+      summary: string;
+      comments: PullRequestComment[];
+    }
+  | {
+      type: "commit";
+      repo: string;
+      sha: string;
+      message: string;
+      author: string;
+      date: string;
+      files?: string[];
+    }
+  | {
+      type: "document";
+      title: string;
+      status?: string;
+      section?: string;
+      body: string;
+      decisiveLines?: string[];
+    };
+
 export interface Source {
+  /** Stable id joining the model-facing source to its view-only detail. */
+  id: string;
   kind: SourceKind;
   label: string;
   url?: string;
   excerpt?: string;
+  /** Rich, source-specific content; stripped from structuredContent into _meta. */
+  detail?: SourceDetail;
 }
 
 export interface Argument {
