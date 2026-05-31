@@ -1,67 +1,157 @@
 import { McpServer } from "skybridge/server";
 import { z } from "zod";
+import { getStore, toCard } from "@/data/store.js";
 
 const server = new McpServer(
   {
-    name: "alpic-openai-app",
+    name: "why",
     version: "0.0.1",
   },
   { capabilities: {} },
 )
   .registerTool(
     {
-      name: "start",
-      description: "Onboard Skybridge",
+      name: "find-decision",
+      description:
+        "Look up a past engineering or org decision and return a Decision Card: who decided, when, which alternatives lost, and the 2-3 reasons that won, each linked to its source. Use when the user asks why a decision was made.",
       inputSchema: {
-        name: z.string().optional().describe("The user name."),
+        query: z
+          .string()
+          .min(1)
+          .describe(
+            "Natural-language description of the decision, e.g. 'why did we choose our database' or 'our refund policy'.",
+          ),
+      },
+      annotations: {
+        readOnlyHint: true,
+        openWorldHint: false,
+        destructiveHint: false,
       },
       view: {
-        component: "onboarding",
-        description: "Onboarding deck",
+        component: "find-decision",
+        description: "Decision Card",
         csp: {
-          resourceDomains: [
-            "https://fonts.googleapis.com",
-            "https://fonts.gstatic.com",
+          redirectDomains: [
+            "https://github.com",
+            "https://northwind-eng.slack.com",
+            "https://www.notion.so",
+            "https://docs.google.com",
           ],
-          redirectDomains: ["https://docs.skybridge.tech"],
         },
       },
     },
-    async ({ name }) => {
+    async ({ query }) => {
+      const matches = await getStore().search(query);
+      const top = matches[0]?.decision ?? null;
+
+      if (!top) {
+        return {
+          structuredContent: { decision: null, query },
+          content: [
+            {
+              type: "text",
+              text: `No matching decision was found for "${query}". Ask a clarifying question before trying again.`,
+            },
+          ],
+          isError: false,
+        };
+      }
+
+      const decision = toCard(top);
+      const maybeAlsoMatched =
+        matches[1] && matches[1].score >= matches[0].score - 1
+          ? ` Another decision also matched: ${matches[1].decision.title}. Ask a clarifying question if the user's intent is ambiguous.`
+          : "";
+      const timelineGuidance =
+        decision.laterEventCount > 0
+          ? ` Offer to answer "What changed since?" and, if the user asks, call get-decision-changes with decisionId ${decision.id}.`
+          : ` This decision has no later events in the corpus; if the user asks what changed since, call get-decision-changes with decisionId ${decision.id} and say it still stands.`;
+
       return {
-        structuredContent: { name },
-        content: [{ type: "text", text: `User name: ${name}` }],
+        structuredContent: { decision, query },
+        content: [
+          {
+            type: "text",
+            text: `Found decision "${decision.title}" from ${decision.date}, owned by ${decision.owner}. Explain the decision in prose around the card, citing the winning arguments and source links shown in the card.${timelineGuidance}${maybeAlsoMatched}`,
+          },
+        ],
         isError: false,
       };
     },
   )
   .registerTool(
     {
-      name: "get-fortune-cookie",
-      description: "Get fortune cookie",
+      name: "get-decision-changes",
+      description:
+        "Return the chronological later events that revisited, reversed, or partially reversed a past decision. An empty timeline is a valid answer because the decision still stands.",
+      inputSchema: {
+        decisionId: z
+          .string()
+          .optional()
+          .describe("Prefer this when following up on a decision already shown."),
+        query: z
+          .string()
+          .optional()
+          .describe("Use when no decision has been shown yet; resolves by keyword search."),
+      },
+      annotations: {
+        readOnlyHint: true,
+        openWorldHint: false,
+        destructiveHint: false,
+      },
     },
-    async () => {
-      const predictions = [
-        "A pleasant surprise is waiting for you.",
-        "Your hard work will soon pay off.",
-        "An unexpected friendship will brighten your week.",
-        "The best is yet to come.",
-        "A small step today leads to a giant leap tomorrow.",
-        "Trust your instincts: they are sharper than you think.",
-        "Adventure awaits just around the corner.",
-        "A long-forgotten idea will return with great success.",
-        "Kindness given today will be returned threefold.",
-        "Something you lost will soon be found.",
-      ];
-      const prediction =
-        predictions[Math.floor(Math.random() * predictions.length)];
+    async ({ decisionId, query }) => {
+      const store = getStore();
+      const byId = decisionId ? await store.getById(decisionId) : null;
+      const byQuery =
+        !byId && query ? (await store.search(query))[0]?.decision ?? null : null;
+      const decision = byId ?? byQuery;
 
-      // simulate backend work
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!decision) {
+        return {
+          structuredContent: {
+            decisionId: decisionId ?? null,
+            decisionTitle: null,
+            events: [],
+          },
+          content: [
+            {
+              type: "text",
+              text: "Could not resolve a decision. Ask which decision the user means, then call get-decision-changes with a decisionId or clearer query.",
+            },
+          ],
+          isError: false,
+        };
+      }
+
+      const events = [...decision.timeline].sort((a, b) =>
+        a.date.localeCompare(b.date),
+      );
+      const eventLines = events.map((event) => {
+        const source = event.source?.url
+          ? ` [${event.source.label}](${event.source.url})`
+          : event.source
+            ? ` ${event.source.label}`
+            : "";
+
+        return `- ${event.date}: ${event.title} (${event.kind}). ${event.summary}${source}`;
+      });
 
       return {
-        structuredContent: { prediction },
-        content: [{ type: "text", text: prediction }],
+        structuredContent: {
+          decisionId: decision.id,
+          decisionTitle: decision.title,
+          events,
+        },
+        content: [
+          {
+            type: "text",
+            text:
+              events.length === 0
+                ? `No later events were found for "${decision.title}". Tell the user the decision still stands in this corpus.`
+                : `Later events for "${decision.title}" are below. Render them as a chronological prose timeline, oldest first, and include each source as a markdown link when a URL is present.\n${eventLines.join("\n")}`,
+          },
+        ],
         isError: false,
       };
     },
