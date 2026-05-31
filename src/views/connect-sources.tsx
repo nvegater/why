@@ -2,7 +2,7 @@ import "@/index.css";
 
 import { Button } from "@alpic-ai/ui/components/button";
 import { Maximize2, Minimize2 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   useDisplayMode,
   useLayout,
@@ -24,17 +24,63 @@ type Step = "select" | "authorize" | "done";
 
 type OnboardingState = {
   step: Step;
-  selectedIds: string[];
-  connectedIds: string[];
+  selectedIds: ConnectorId[];
+  connectedIds: ConnectorId[];
 };
 
 const FADE = "36px";
+const CONNECTOR_ID_SET = new Set<string>(CONNECTORS.map((c) => c.id));
 
 /** Extra breathing room below the host's fullscreen header bar. */
 const FULLSCREEN_TOP_INSET = 32;
 
 /** How long the simulated OAuth round-trip "takes" before a row flips connected. */
 const AUTHORIZE_DELAY = 1500;
+
+function isStep(value: unknown): value is Step {
+  return value === "select" || value === "authorize" || value === "done";
+}
+
+function normalizeConnectorIds(
+  ids: unknown,
+  fallback: ConnectorId[] = [],
+): ConnectorId[] {
+  if (!Array.isArray(ids)) return fallback;
+
+  const seen = new Set<ConnectorId>();
+  for (const id of ids) {
+    if (typeof id === "string" && CONNECTOR_ID_SET.has(id)) {
+      seen.add(id as ConnectorId);
+    }
+  }
+
+  return [...seen];
+}
+
+function initialOnboardingState(): OnboardingState {
+  const saved = getOnboarding();
+  const connectedIds = normalizeConnectorIds(saved.connectedIds);
+
+  return {
+    step: saved.done ? "done" : "select",
+    selectedIds: saved.done ? connectedIds : [],
+    connectedIds: saved.done ? connectedIds : [],
+  };
+}
+
+function normalizeOnboardingState(
+  state: Partial<OnboardingState> | null | undefined,
+  fallback: OnboardingState,
+): OnboardingState {
+  return {
+    step: isStep(state?.step) ? state.step : fallback.step,
+    selectedIds: normalizeConnectorIds(state?.selectedIds, fallback.selectedIds),
+    connectedIds: normalizeConnectorIds(
+      state?.connectedIds,
+      fallback.connectedIds,
+    ),
+  };
+}
 
 export default function ConnectSources() {
   const { theme, maxHeight, safeArea } = useLayout();
@@ -46,15 +92,25 @@ export default function ConnectSources() {
   // selection; one who already onboarded reopens straight to the summary. Read
   // once — useViewState only applies the default on first mount (and otherwise
   // restores its own per-view localStorage snapshot).
-  const savedRef = useRef(getOnboarding());
-  const saved = savedRef.current;
-  const [{ step, selectedIds, connectedIds }, setState] =
-    useViewState<OnboardingState>({
-      step: saved.done ? "done" : "select",
-      selectedIds: saved.done ? saved.connectedIds : [],
-      connectedIds: saved.done ? saved.connectedIds : [],
-    });
-  const [authorizingId, setAuthorizingId] = useState<string | null>(null);
+  const initialState = useMemo(() => initialOnboardingState(), []);
+  const [storedState, setStoredState] =
+    useViewState<Partial<OnboardingState>>(initialState);
+  const { step, selectedIds, connectedIds } = normalizeOnboardingState(
+    storedState,
+    initialState,
+  );
+  const setState = useCallback(
+    (next: OnboardingState | ((prev: OnboardingState) => OnboardingState)) =>
+      setStoredState((prev) => {
+        const previous = normalizeOnboardingState(prev, initialState);
+        const resolved =
+          typeof next === "function" ? next(previous) : next;
+
+        return normalizeOnboardingState(resolved, initialState);
+      }),
+    [initialState, setStoredState],
+  );
+  const [authorizingId, setAuthorizingId] = useState<ConnectorId | null>(null);
   const [fade, setFade] = useState({ top: false, bottom: false });
   const scrollRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -91,7 +147,7 @@ export default function ConnectSources() {
   const toScroll = () => scrollRef.current?.scrollTo({ top: 0 });
 
   const toggle = useCallback(
-    (id: string) =>
+    (id: ConnectorId) =>
       setState((prev) => ({
         ...prev,
         selectedIds: prev.selectedIds.includes(id)
@@ -126,7 +182,7 @@ export default function ConnectSources() {
   }, [setState]);
 
   const authorize = useCallback(
-    (id: string) => {
+    (id: ConnectorId) => {
       if (authorizingId || connectedIds.includes(id)) return;
       const connector = CONNECTORS.find((c) => c.id === id);
       if (!connector) return;

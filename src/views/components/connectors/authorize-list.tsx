@@ -6,7 +6,7 @@ import {
   ExternalLink,
   TriangleAlert,
 } from "lucide-react";
-import type { Connector } from "@/data/connectors.js";
+import type { Connector, ConnectorId } from "@/data/connectors.js";
 import ConnectorLogo from "@/views/components/connectors/connector-logo.js";
 
 /**
@@ -26,9 +26,9 @@ export default function AuthorizeList({
   onFinish,
 }: {
   connectors: Connector[];
-  connectedIds: string[];
-  authorizingId: string | null;
-  onAuthorize: (id: string) => void;
+  connectedIds: ConnectorId[];
+  authorizingId: ConnectorId | null;
+  onAuthorize: (id: ConnectorId) => void;
   onBack: () => void;
   onFinish: () => void;
 }) {

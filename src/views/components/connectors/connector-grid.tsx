@@ -1,6 +1,6 @@
 import { Button } from "@alpic-ai/ui/components/button";
 import { Check, ChevronRight } from "lucide-react";
-import type { Connector } from "@/data/connectors.js";
+import type { Connector, ConnectorId } from "@/data/connectors.js";
 import ConnectorLogo from "@/views/components/connectors/connector-logo.js";
 
 /**
@@ -17,8 +17,8 @@ export default function ConnectorGrid({
   onContinue,
 }: {
   connectors: Connector[];
-  selectedIds: string[];
-  onToggle: (id: string) => void;
+  selectedIds: ConnectorId[];
+  onToggle: (id: ConnectorId) => void;
   onToggleAll: () => void;
   onContinue: () => void;
 }) {

@@ -1,6 +1,6 @@
 import { Button } from "@alpic-ai/ui/components/button";
 import { Check } from "lucide-react";
-import type { Connector } from "@/data/connectors.js";
+import type { Connector, ConnectorId } from "@/data/connectors.js";
 import ConnectorLogo from "@/views/components/connectors/connector-logo.js";
 
 /**
@@ -16,7 +16,7 @@ export default function ConnectedSummary({
   onReset,
 }: {
   connectors: Connector[];
-  connectedIds: string[];
+  connectedIds: ConnectorId[];
   onManage: () => void;
   onDone: () => void;
   onReset: () => void;
