@@ -100,4 +100,8 @@ export class MockDecisionStore implements DecisionStore {
   async getById(id: string): Promise<Decision | null> {
     return DECISIONS.find((decision) => decision.id === id) ?? null;
   }
+
+  async list(): Promise<Decision[]> {
+    return [...DECISIONS];
+  }
 }

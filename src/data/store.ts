@@ -1,5 +1,11 @@
 import { MockDecisionStore } from "./mock/mock-store.js";
-import type { Decision, DecisionCard, SourceDetail } from "./types.js";
+import type {
+  Decision,
+  DecisionCard,
+  DecisionListItem,
+  SourceDetail,
+  SourceKind,
+} from "./types.js";
 
 export interface DecisionMatch {
   decision: Decision;
@@ -9,7 +15,18 @@ export interface DecisionMatch {
 export interface DecisionStore {
   search(query: string): Promise<DecisionMatch[]>;
   getById(id: string): Promise<Decision | null>;
+  list(): Promise<Decision[]>;
 }
+
+const SOURCE_KIND_ORDER: SourceKind[] = [
+  "adr",
+  "slack",
+  "pr",
+  "commit",
+  "doc",
+  "notion",
+  "email",
+];
 
 /**
  * Project a Decision into the model-facing card. Source `detail` is stripped
@@ -32,6 +49,33 @@ export function toCard(decision: Decision): DecisionCard {
     })),
     gaps,
     laterEventCount: timeline.length,
+  };
+}
+
+export function toListItem(decision: Decision): DecisionListItem {
+  const counts = new Map<SourceKind, number>();
+  const seen = new Set<string>();
+
+  for (const argument of decision.arguments) {
+    for (const source of argument.sources) {
+      if (seen.has(source.id)) continue;
+
+      seen.add(source.id);
+      counts.set(source.kind, (counts.get(source.kind) ?? 0) + 1);
+    }
+  }
+
+  return {
+    id: decision.id,
+    title: decision.title,
+    date: decision.date,
+    owner: decision.owner,
+    sourceAvailability: SOURCE_KIND_ORDER.flatMap((kind) => {
+      const count = counts.get(kind);
+      return count ? [{ kind, count }] : [];
+    }),
+    sourceCount: seen.size,
+    laterEventCount: decision.timeline.length,
   };
 }
 

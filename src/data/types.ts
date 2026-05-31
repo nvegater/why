@@ -118,6 +118,11 @@ export interface RelatedRef {
   title: string;
 }
 
+export interface SourceAvailability {
+  kind: SourceKind;
+  count: number;
+}
+
 export interface Decision {
   id: string;
   title: string;
@@ -138,3 +143,13 @@ export type DecisionCard = Omit<Decision, "keywords" | "timeline"> & {
   laterEventCount: number;
   gaps: InformationGap[];
 };
+
+export interface DecisionListItem {
+  id: string;
+  title: string;
+  date: string;
+  owner: string;
+  sourceAvailability: SourceAvailability[];
+  sourceCount: number;
+  laterEventCount: number;
+}

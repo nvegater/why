@@ -622,7 +622,7 @@ export const DECISIONS: Decision[] = [
   {
     id: "dec-hiring-worksample",
     title: "Replace live coding with a paid take-home work sample",
-    date: "2024-05-08",
+    date: "2026-05-20",
     owner: "Aisha Bello (Head of People)",
     reviewers: ["Marcus Lindqvist (CTO)", "Dana Okafor"],
     audience: "non-technical",
@@ -636,20 +636,20 @@ export const DECISIONS: Decision[] = [
       {
         claim:
           "Take-homes give a stronger, lower-bias signal than whiteboard panic.",
-        decidedAt: "2024-05-08",
+        decidedAt: "2026-05-20",
         sources: [
           {
             id: "dec-hiring-worksample-a1-email",
             kind: "email",
             label:
-              'From Aisha Bello - "Interview process change - take-home work sample" - 2024-05-08',
+              'From Aisha Bello - "Interview process change - take-home work sample" - 2026-05-20',
             excerpt:
               "Aisha summarized candidate feedback and scorecard variance from the whiteboard process.",
             detail: {
               type: "email",
               from: "Aisha Bello <aisha@northwind.example>",
               to: ["hiring-managers@northwind.example", "Marcus Lindqvist"],
-              date: "2024-05-08",
+              date: "2026-05-20",
               subject: "Interview process change - take-home work sample",
               quotes: [
                 {
@@ -669,7 +669,7 @@ export const DECISIONS: Decision[] = [
       },
       {
         claim: "Candidates report a better experience and fewer drop-offs.",
-        decidedAt: "2024-05-08",
+        decidedAt: "2026-05-20",
         sources: [
           {
             id: "dec-hiring-worksample-a2-doc",
@@ -693,7 +693,7 @@ export const DECISIONS: Decision[] = [
       {
         claim:
           "We pay for candidates' time to keep the bar fair and respect their effort.",
-        decidedAt: "2024-05-08",
+        decidedAt: "2026-05-20",
         sources: [
           {
             id: "dec-hiring-worksample-a3-doc",
@@ -919,7 +919,7 @@ export const DECISIONS: Decision[] = [
   {
     id: "dec-refund-manual-review",
     title: "Keep automatic refund approvals off for EU disputes",
-    date: "2025-10-02",
+    date: "2026-05-22",
     owner: "Owner not recorded",
     reviewers: [],
     audience: "non-technical",
@@ -929,26 +929,26 @@ export const DECISIONS: Decision[] = [
       {
         claim:
           "The team paused auto-approval after support saw duplicate refunds in two EU pilot accounts.",
-        decidedAt: "2025-10-02",
+        decidedAt: "2026-05-22",
         sources: [],
       },
       {
         claim:
           "Manual review stays in place until billing can reconcile dispute webhooks within one business day.",
-        decidedAt: "2025-10-02",
+        decidedAt: "2026-05-22",
         sources: [
           {
             id: "dec-refund-manual-review-a2-email",
             kind: "email",
             label:
-              'From Mina Chen - "EU refund pilot follow-up" - 2025-10-02',
+              'From Mina Chen - "EU refund pilot follow-up" - 2026-05-22',
             excerpt:
               "Mina noted that support would keep EU disputes in manual review until webhook reconciliation stopped creating duplicates.",
             detail: {
               type: "email",
               from: "Mina Chen <mina@northwind.example>",
               to: ["billing-ops@northwind.example"],
-              date: "2025-10-02",
+              date: "2026-05-22",
               subject: "EU refund pilot follow-up",
               quotes: [
                 {

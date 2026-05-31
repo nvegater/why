@@ -7,6 +7,7 @@ Y answers "why did we decide X?" from inside a ChatGPT or Skybridge conversation
 The app only reads records. It surfaces one past decision with the owner, date, losing alternatives, and the 2-3 arguments that won, with each claim linked back to source evidence when the corpus has it.
 
 Core actions:
+- List recorded decisions with a decision-date filter, defaulting to last week.
 - Find the decision behind a technical or non-technical choice.
 - Ask what changed after a shown decision.
 
@@ -19,6 +20,8 @@ The LLM contributes intent matching, prose explanation, clarification when match
 The LLM lacks the private source systems and the structured decision projection. Y supplies those through tools and keeps the visual surface small enough for inline chat.
 
 ## UI Overview
+
+The decision list view for `list-decisions` shows the available recorded decisions scoped to a date range. If the caller provides no range, the tool defaults to last week. Each row is about the decision made: title first, then date and owner. Source availability appears as small, recessed source stamps so the user can tell which evidence types exist without the row becoming a source browser. Selecting a row opens the existing Decision Card in place.
 
 The first view is a thin Decision Card for `find-decision`. It shows the decision title, date, owner, losing alternatives, a dated winning-argument timeline, source pills, known information gaps, and related-decision chips. Each timeline marker shows a compact date and exposes the exact recorded date or time in a tooltip on hover or focus.
 
@@ -42,6 +45,13 @@ The "what changed since?" flow is viewless. The model calls `get-decision-change
 
 ## UX Flows
 
+List decisions:
+1. User asks to show available decisions, optionally with a date filter.
+2. Model calls `list-decisions` with explicit `from` / `to` dates, a supported relative range, or no filter.
+3. Tool returns matching decision list rows, newest first.
+4. View renders the list with minimal source availability stamps.
+5. User can select a row to open the existing Decision Card in place.
+
 Find a decision:
 1. User asks why a decision was made.
 2. Model calls `find-decision` with a natural-language query.
@@ -56,6 +66,12 @@ Get later changes:
 4. ChatGPT renders a prose timeline, or says the decision still stands when there are no events.
 
 ## Tools and Views
+
+**View tool: `list-decisions`**
+- Input: `{ from?: string, to?: string, relativeRange?: "last-7-days" | "this-week" | "last-week" | "this-month" | "last-month" | "this-year" | "last-year" }`
+- Output: `{ decisions: DecisionListItem[], range: { from: string | null, to: string | null, label: string, isFiltered: boolean } }`
+- View: `list-decisions`
+- Behavior: returns recorded decisions sorted newest first, filtered inclusively by decision date. When no date filter is supplied, it defaults to `relativeRange: "last-week"`. Rows include title, date, owner, later-event count, and source availability counts by source kind.
 
 **View tool: `find-decision`**
 - Input: `{ query: string }`
@@ -77,6 +93,6 @@ The mock corpus contains six Northwind Logistics decisions:
 - `dec-pg-primary`: Adopt PostgreSQL as the primary datastore.
 - `dec-search-rollback`: Roll back Elasticsearch search to Postgres FTS.
 - `dec-usage-pricing`: Switch to usage-based pricing for the API tier.
-- `dec-hiring-worksample`: Replace live coding with a paid take-home work sample.
+- `dec-hiring-worksample`: Replace live coding with a paid take-home work sample. Dated inside the default last-week window so the list view has a richer example row.
 - `dec-webhook-outbox`: Move webhook ingestion to an outbox-backed queue.
-- `dec-refund-manual-review`: Keep automatic refund approvals off for EU disputes. This is intentionally sparse and exercises missing alternatives, missing source links, no related decisions, and explicit information gaps.
+- `dec-refund-manual-review`: Keep automatic refund approvals off for EU disputes. This is intentionally sparse, dated inside the default last-week window, and exercises missing alternatives, missing source links, no related decisions, and explicit information gaps.
