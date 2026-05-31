@@ -1,7 +1,7 @@
 import { McpServer } from "skybridge/server";
 import { z } from "zod";
-import { CONNECTORS } from "@/data/connectors.js";
-import { collectSourceDetails, getStore, toCard } from "@/data/store.js";
+import { CONNECTORS } from "./data/connectors.js";
+import { collectSourceDetails, getStore, toCard } from "./data/store.js";
 
 const MIN_SIGNAL_TERMS = 2;
 const STOP_WORDS = new Set([

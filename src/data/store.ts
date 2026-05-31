@@ -1,5 +1,5 @@
-import { MockDecisionStore } from "@/data/mock/mock-store.js";
-import type { Decision, DecisionCard, SourceDetail } from "@/data/types.js";
+import { MockDecisionStore } from "./mock/mock-store.js";
+import type { Decision, DecisionCard, SourceDetail } from "./types.js";
 
 export interface DecisionMatch {
   decision: Decision;

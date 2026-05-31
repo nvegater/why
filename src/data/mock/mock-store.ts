@@ -1,6 +1,6 @@
-import type { Decision } from "@/data/types.js";
-import type { DecisionMatch, DecisionStore } from "@/data/store.js";
-import { DECISIONS } from "@/data/mock/corpus.js";
+import type { Decision } from "../types.js";
+import type { DecisionMatch, DecisionStore } from "../store.js";
+import { DECISIONS } from "./corpus.js";
 
 const DEFAULT_SEARCH_LATENCY_MS = 650;
 

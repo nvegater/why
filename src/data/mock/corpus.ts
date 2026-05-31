@@ -1,4 +1,4 @@
-import type { Decision } from "@/data/types.js";
+import type { Decision } from "../types.js";
 
 export const DECISIONS: Decision[] = [
   {
