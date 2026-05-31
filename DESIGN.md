@@ -84,6 +84,12 @@ components:
     nodeSize: "8px"
     railColor: "color-mix(foreground 20%)"
     railWidth: "1px"
+  date-marker:
+    backgroundColor: "color-mix(foreground 3%)"
+    textColor: "{colors.tertiary-ink}"
+    border: "{colors.border-subtle}"
+    rounded: "{rounded.md}"
+    padding: "0 8px"
   tooltip:
     backgroundColor: "{colors.inverted}"
     textColor: "{colors.inverted-ink}"
@@ -178,7 +184,7 @@ Nothing lifts above the conversation. The source layer is rendered **in place** 
 - **Border / Shadow:** None. See **The Dissolved-Frame Rule** (Elevation).
 - **Edge fade:** A `mask-image` linear gradient on the scroll container, ~36px, applied at an edge only while it is scrollable (top once scrolled, bottom while more remains). This is the only framing device.
 - **Expand control:** A `tertiary` `icon` button, top-right, toggling `fullscreen` / `inline` via `useDisplayMode()`. The card header reserves right padding (`pr-9`) so a long title never runs under it.
-- **Width:** Capped at `max-w-2xl` and centered — narrow enough to keep claim lines in a readable measure.
+- **Width:** Capped at `max-w-[46rem]` and centered - slightly wider than the earlier card so the dated argument rail does not squeeze claim text.
 - **Vertical rhythm:** Sections separated by ~20px (`space-y-5`); items within a section by ~10px.
 - **Note:** this single area hosts every state — the card, the loading skeleton, the empty state, and the in-place source layer all render in it.
 
@@ -201,7 +207,8 @@ Pills are reserved for two roles, and only these two:
 - **Related Chips:** secondary `pill` button with a question-mark icon. Clicking **opens the related decision in place** via a direct `useCallTool("find-decision")` call (no new model turn) and crossfades the card to it; a "Back" control returns to the first decision. The clicked chip carries its own loading spinner (`Button loading`) while the fetch is in flight, and siblings disable. (Supersedes the earlier behavior of sending a follow-up turn to the model.)
 
 ### The Winning-Argument Thread (signature component)
-- Each winning argument is led by a `size-2` Signal Magenta dot, and the dots are linked top-to-bottom by a quiet 1px rail (`bg-foreground/20`) — a literal thread of reasoning down the left of "Why this won." The magenta lives **only** on the dot nodes; the connecting rail is a neutral ink tint. This is the card's entire use of brand color and its single most recognizable mark. See **The One Mark Rule.**
+- Each winning argument sits in a three-column rail: compact date marker, `size-2` Signal Magenta dot, then claim and citations. The date marker uses a quiet bordered neutral chip (`type-text-xs`, tabular nums), and hover/focus reveals the exact recorded date or time in the standard tooltip. The marker is informational, not an action.
+- The dots are linked top-to-bottom by a quiet 1px rail (`bg-foreground/20`) - a literal thread of reasoning down the left of "Why this won." The magenta lives **only** on the dot nodes; the connecting rail is a neutral ink tint. This is the card's entire use of brand color and its single most recognizable mark. See **The One Mark Rule.**
 - The arguments enter with a `motion-safe` staggered fade + slide (80ms apart), so the thread assembles itself; under `prefers-reduced-motion` they are simply present.
 
 ### Source Viewer (in-place source layer)
@@ -224,7 +231,7 @@ The depth layer behind each citation. Clicking a source citation replaces the ca
 ## 6. Do's and Don'ts
 
 ### Do:
-- **Do** keep the card to its essential fields: title, date, owner, losing alternatives, 2–3 winning arguments with links, related chips. If plain text wouldn't meaningfully degrade a piece, it isn't a widget.
+- **Do** keep the card to its essential fields: title, date, owner, losing alternatives, dated 2–3 winning arguments with links, related chips. If plain text wouldn't meaningfully degrade a piece, it isn't a widget.
 - **Do** keep Signal Magenta on exactly one element per card (the winning-argument dot nodes). Its rarity is the signal; the connecting thread rail stays neutral.
 - **Do** keep the frame dissolved: no border, fill, or shadow on the card. Let hierarchy, whitespace, and the edge fade carry separation against the host.
 - **Do** carry the full hierarchy with Inter weights and scale (400/500/600), not a second typeface.

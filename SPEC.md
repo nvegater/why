@@ -20,7 +20,7 @@ The LLM lacks the private source systems and the structured decision projection.
 
 ## UI Overview
 
-The first view is a thin Decision Card for `find-decision`. It shows the decision title, date, owner, losing alternatives, winning arguments, source pills, known information gaps, and related-decision chips.
+The first view is a thin Decision Card for `find-decision`. It shows the decision title, date, owner, losing alternatives, a dated winning-argument timeline, source pills, known information gaps, and related-decision chips. Each timeline marker shows a compact date and exposes the exact recorded date or time in a tooltip on hover or focus.
 
 Source pills open the original GitHub, Slack, Notion, or Google Doc source when a URL exists. Email sources render as non-tappable provenance tags.
 
@@ -59,7 +59,7 @@ Get later changes:
 
 **View tool: `find-decision`**
 - Input: `{ query: string }`
-- Output: `{ decision: DecisionCard | null, query: string }`, where `DecisionCard` may include `gaps`.
+- Output: `{ decision: DecisionCard | null, query: string }`, where `DecisionCard` may include `gaps` and each winning argument may include `decidedAt` for its timeline marker.
 - View: `find-decision`
 - Behavior: returns the best matching decision card payload after a realistic mock delay. If no match exists, the view renders either a too-broad or no-match empty state and the model asks a clarifying question.
 

@@ -89,6 +89,8 @@ export interface Source {
 
 export interface Argument {
   claim: string;
+  /** ISO local date or date-time for the decision-making moment behind this claim. */
+  decidedAt?: string;
   sources: Source[];
 }
 

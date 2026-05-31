@@ -176,7 +176,7 @@ export default function FindDecision() {
         paddingLeft: left,
       }}
     >
-      <div className="relative mx-auto w-full max-w-2xl">
+      <div className="relative mx-auto w-full max-w-[46rem]">
         <Button
           variant="tertiary"
           size="icon"

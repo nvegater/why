@@ -26,22 +26,25 @@ export default function DecisionSkeleton() {
       </div>
       <div className="space-y-3">
         <Skeleton className="h-4 w-28" />
-        <div className="grid grid-cols-[0.75rem_1fr] gap-2">
-          <Skeleton className="mt-2 size-1.5 rounded-full" />
+        <div className="grid grid-cols-[4.25rem_0.875rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[5rem_0.875rem_minmax(0,1fr)]">
+          <Skeleton className="h-6 w-14 justify-self-end rounded-md" />
+          <Skeleton className="mt-2.5 size-2 rounded-full" />
           <div className="space-y-2">
             <Skeleton className="h-12 w-full" />
             <Skeleton className="h-7 w-36 rounded-full" />
           </div>
         </div>
-        <div className="grid grid-cols-[0.75rem_1fr] gap-2">
-          <Skeleton className="mt-2 size-1.5 rounded-full" />
+        <div className="grid grid-cols-[4.25rem_0.875rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[5rem_0.875rem_minmax(0,1fr)]">
+          <Skeleton className="h-6 w-14 justify-self-end rounded-md" />
+          <Skeleton className="mt-2.5 size-2 rounded-full" />
           <div className="space-y-2">
             <Skeleton className="h-12 w-full" />
             <Skeleton className="h-7 w-44 rounded-full" />
           </div>
         </div>
-        <div className="grid grid-cols-[0.75rem_1fr] gap-2">
-          <Skeleton className="mt-2 size-1.5 rounded-full" />
+        <div className="grid grid-cols-[4.25rem_0.875rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[5rem_0.875rem_minmax(0,1fr)]">
+          <Skeleton className="h-6 w-14 justify-self-end rounded-md" />
+          <Skeleton className="mt-2.5 size-2 rounded-full" />
           <div className="space-y-2">
             <Skeleton className="h-12 w-5/6" />
             <Skeleton className="h-7 w-32 rounded-full" />

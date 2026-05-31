@@ -14,6 +14,7 @@ export const DECISIONS: Decision[] = [
       {
         claim:
           "Shipment and route data is highly relational; JSONB covers our few webhook blobs without a second store.",
+        decidedAt: "2024-02-12T09:44:00",
         sources: [
           {
             id: "dec-pg-primary-a1-adr",
@@ -78,6 +79,7 @@ export const DECISIONS: Decision[] = [
       {
         claim:
           "Managed RDS gives PITR and read replicas out of the box; ops stays low.",
+        decidedAt: "2024-02-12",
         sources: [
           {
             id: "dec-pg-primary-a2-doc",
@@ -137,6 +139,7 @@ export const DECISIONS: Decision[] = [
       },
       {
         claim: "Team already knows SQL; migrating off MySQL is mechanical.",
+        decidedAt: "2024-02-12",
         sources: [
           {
             id: "dec-pg-primary-a3-email",
@@ -203,6 +206,7 @@ export const DECISIONS: Decision[] = [
     arguments: [
       {
         claim: "Search is less than 3% of queries but about 40% of data-infra spend.",
+        decidedAt: "2025-03-04",
         sources: [
           {
             id: "dec-search-rollback-a1-adr",
@@ -244,6 +248,7 @@ export const DECISIONS: Decision[] = [
       },
       {
         claim: "Dual-write to ES was the top source of data-sync incidents.",
+        decidedAt: "2025-03-03T16:12:00",
         sources: [
           {
             id: "dec-search-rollback-a2-slack",
@@ -320,6 +325,7 @@ export const DECISIONS: Decision[] = [
       {
         claim:
           "Postgres FTS keeps search transactional with source rows, so there is no eventual-consistency window.",
+        decidedAt: "2025-03-04",
         sources: [
           {
             id: "dec-search-rollback-a3-commit",
@@ -419,6 +425,7 @@ export const DECISIONS: Decision[] = [
       {
         claim:
           "Top 10% of accounts drove 60% of API calls on flat plans, so we subsidized heavy users.",
+        decidedAt: "2024-09-18",
         sources: [
           {
             id: "dec-usage-pricing-a1-notion",
@@ -459,6 +466,7 @@ export const DECISIONS: Decision[] = [
       },
       {
         claim: "Metered entry price removes the number one SMB sales objection.",
+        decidedAt: "2024-09-17T11:20:00",
         sources: [
           {
             id: "dec-usage-pricing-a2-slack",
@@ -522,6 +530,7 @@ export const DECISIONS: Decision[] = [
       {
         claim:
           "Metering infra already exists from rate-limiting; billing reads the same counters.",
+        decidedAt: "2024-09-18",
         sources: [
           {
             id: "dec-usage-pricing-a3-pr",
@@ -627,6 +636,7 @@ export const DECISIONS: Decision[] = [
       {
         claim:
           "Take-homes give a stronger, lower-bias signal than whiteboard panic.",
+        decidedAt: "2024-05-08",
         sources: [
           {
             id: "dec-hiring-worksample-a1-email",
@@ -659,6 +669,7 @@ export const DECISIONS: Decision[] = [
       },
       {
         claim: "Candidates report a better experience and fewer drop-offs.",
+        decidedAt: "2024-05-08",
         sources: [
           {
             id: "dec-hiring-worksample-a2-doc",
@@ -682,6 +693,7 @@ export const DECISIONS: Decision[] = [
       {
         claim:
           "We pay for candidates' time to keep the bar fair and respect their effort.",
+        decidedAt: "2024-05-08",
         sources: [
           {
             id: "dec-hiring-worksample-a3-doc",
@@ -742,6 +754,7 @@ export const DECISIONS: Decision[] = [
       {
         claim:
           "The outbox makes partner callbacks retryable without holding customer-facing writes open.",
+        decidedAt: "2025-06-11",
         sources: [
           {
             id: "dec-webhook-outbox-a1-adr",
@@ -798,6 +811,7 @@ export const DECISIONS: Decision[] = [
       {
         claim:
           "Idempotency keys are stored with each queued event, so duplicate partner retries collapse to one delivery.",
+        decidedAt: "2025-06-11",
         sources: [
           {
             id: "dec-webhook-outbox-a2-commit",
@@ -825,6 +839,7 @@ export const DECISIONS: Decision[] = [
       {
         claim:
           "Support can inspect stuck deliveries in one table instead of correlating app logs and partner tickets.",
+        decidedAt: "2025-06-10T14:02:00",
         sources: [
           {
             id: "dec-webhook-outbox-a3-slack",
@@ -914,11 +929,13 @@ export const DECISIONS: Decision[] = [
       {
         claim:
           "The team paused auto-approval after support saw duplicate refunds in two EU pilot accounts.",
+        decidedAt: "2025-10-02",
         sources: [],
       },
       {
         claim:
           "Manual review stays in place until billing can reconcile dispute webhooks within one business day.",
+        decidedAt: "2025-10-02",
         sources: [
           {
             id: "dec-refund-manual-review-a2-email",
